@@ -1,0 +1,142 @@
+{% extends 'nav_base.html' %}
+{% load staticfiles %}
+
+{% block head %}
+<link href="{% static '/css/api_roots.css' %}" rel="stylesheet">
+<script type="text/javascript" src="{% static '/js/api_roots.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+API Roots
+{% endblock %}
+
+{% block body %}
+<br/>
+<form id="form-create-modify-api-root" action="{% url 'create_modify_api_root' %}" method="POST">{% csrf_token %}</form>
+<form id="form-delete-api-root" action="{% url 'delete_api_root' %}" method="POST">{% csrf_token %}</form>
+<div class="row">
+    <div class="col-offset-1 col-10 col-offset-1 col-md-offset-1 col-md-10 col-md-offset-1 col-sm-offset-1 col-sm-10 col-sm-offset-1 col-lg-offset-1 col-lg-10 col-lg-offset-1 col-xl-offset-1 col-xl-10 col-xl-offset-1">
+        <h2 class="text-center">
+            API Roots
+        </h2>
+        <table class="table table-api-roots">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">API Root</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Max Content Length</th>
+                    <th scope="col">Modify</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for api_root in api_roots %}
+                <tr class="tr-api-root">
+                    <td scope="col" class="th-api-root-name" data-collections="{{api_root.collections}}">{{ api_root.name }}</td>
+                    <td scope="col" class="th-api-root-title">{{ api_root.title }}</td>
+                    <td scope="col" class="th-api-root-description">{{ api_root.description }}</td>
+                    <td scope="col" class="th-api-root-max-content-length">{{ api_root.max_content_length }}</td>
+                    <td scope="col">
+                        <button type="button" class="btn btn-warning btn-sm btn-modify-api-root">Modify</button>
+                    </td>
+                    <td scope="col">
+                        <button type="button" class="btn btn-danger btn-sm btn-delete-api-root">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+        <th scope="col"><button type="button" class="btn btn-info" id="btn-create-api-root">Create API Root</button></th>
+        <br/>
+        <br/>
+    </div>
+
+    <div id="modal-api-root-modify" class="modal" tabindex="-1" role="dialog">
+        <div  class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title text-center">Create/Modify API Root Properties</h2>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-api-root">
+                        <tbody>
+                            <tr>
+                                <td>API Root</td>
+                                <td><input type="text" class="form-control" id="modify-api-root-name" disabled/></td>
+                            </tr>
+                            <tr>
+                                <td>Title</td>
+                                <td><input type="text" class="form-control" id="modify-api-root-title"/></td>
+                            </tr>
+                            <tr>
+                                <td>Description</td>
+                                <td><input type="text" class="form-control" id="modify-api-root-description"/></td>
+                            </tr>
+                            <tr>
+                                <td>Max Content Length</td>
+                                <td><input type="text" class="form-control" id="modify-api-root-max-content-length"/></td>
+                                <input type="hidden" class="form-control" id="modify-api-root-action"/>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <br/>
+                    <hr/>
+                    <h2 class="modal-title text-center">Choose Collections</h3>
+
+                    <table class="table table-api-root">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Check</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Alias</th>
+                                <th scope="col">Can Read</th>
+                                <th scope="col">Can Write</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for collection in collections%}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="form-check-input check-col-id" data-col-id="{{collection.col_id}}" id="modify-api-root-title"/>
+                                </td>
+                                <td>{{collection.col_id}}</td>
+                                <td>{{collection.title}}</td>
+                                <td>{{collection.alias}}</td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input" disabled {% if collection.can_read %}checked{% endif %}/>
+                                </td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input" disabled {% if collection.can_write %}checked{% endif %}/>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <hr/>
+                    <h2 class="modal-title text-center">Choose Users</h3>
+                    <table class="table table-api-root">
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="form-check-input check-users" id="cb-{{user.username}}" checked data-username="{{user.username}}"/>
+                                    <label class="form-check-label" for="cb-{{user.username}}">{{user.username}}</label>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn-create-modify-changes">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}

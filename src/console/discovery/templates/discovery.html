@@ -1,0 +1,106 @@
+{% extends 'nav_base.html' %}
+{% load staticfiles %}
+
+{% block head %}
+<link href="{% static '/css/discovery.css' %}" rel="stylesheet">
+<script type="text/javascript" src="{% static '/js/discovery.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+Discovery
+{% endblock %}
+
+{% block body %}
+<br/>
+<form id="form-modify-discovery" action="{% url 'modify_discovery' %}" method="POST">{% csrf_token %}</form>
+<div class="row">
+    <div class="col-offset-1 col-10 col-offset-1 col-md-offset-1 col-md-10 col-md-offset-1 col-sm-offset-1 col-sm-10 col-sm-offset-1 col-lg-offset-1 col-lg-10 col-lg-offset-1 col-xl-offset-1 col-xl-10 col-xl-offset-1">
+        <h1 class="text-center">
+            Welcome to S-TIP TAXII Server 2.1
+        </h1>
+        <br/>
+        <h2 class="text-center">
+            Discovery Information
+        </h2>
+        <br/>
+        <table class="table table-discovery">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Contact</th>
+                    <th scope="col">API Roots</th>
+                    <th scope="col">Default</th>
+                    <th scope="col">Operation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td scope="col" id="text-discovery-title">{{discovery.title}}</td>
+                    <td scope="col" id="text-discovery-description">{{discovery.description}}</td>
+                    <td scope="col" id="text-discovery-contact">{{discovery.contact}}</td>
+                    <td scope="col">
+                        {% for api_root in discovery.api_roots %}
+                            {{api_root.name}}<br/>
+                        {% endfor %}
+                    </td>
+                    <td scope="col" id="text-discovery-default-name">
+                        {% if discovery.default %}
+                            {{discovery.default.name}}
+                        {% else %}
+                            No default api_root.
+                        {% endif %}
+                    </td>
+                    <td scope="col"><button type="button" class="btn btn-warning btn-sm" id="btn-modify-discovery">Modify</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <br/>
+    </div>
+
+    <div id="modal-modify-discovery" class="modal" tabindex="-1" role="dialog">
+        <div  class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title text-center">Modify Discovery Properties</h3>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-discovery">
+                        <tbody>
+                            <tr>
+                                <td>Title</td>
+                                <td><input type="text" class="form-control" id="modify-discovery-title"/></td>
+                            </tr>
+                            <tr>
+                                <td>Description</td>
+                                <td><input type="text" class="form-control" id="modify-discovery-description"/></td>
+                            </tr>
+                            <tr>
+                                <td>Contact</td>
+                                <td><input type="text" class="form-control" id="modify-discovery-contact"/></td>
+                            </tr>
+                            <tr>
+                                <td>Default</td>
+                                <td>
+                                    <select class="form-control" id="modify-discovery-default" {% if not discovery.default %}disabled{% endif %}>
+                                        {% for api_root in discovery.api_roots %}
+                                        <option value="{{api_root.name}}">{{api_root.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <br/>
+                                    <input type="checkbox" class="form-check-input" id="check-no-default" {% if not discovery.default %}checked{% endif %}/>
+                                    <label class="form-check-label" for="check-no-default">No default api_root</label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btn-modify-discovery-changes">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}

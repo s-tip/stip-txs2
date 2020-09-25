@@ -1,0 +1,139 @@
+{% extends 'nav_base.html' %}
+{% load staticfiles %}
+
+{% block head %}
+<link href="{% static '/css/collections.css' %}" rel="stylesheet">
+<script type="text/javascript" src="{% static '/js/collections.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+Collections
+{% endblock %}
+
+{% block body %}
+<br/>
+<form id="form-create-modify-collection" action="{% url 'create_modify_collection' %}" method="POST">{% csrf_token %}</form>
+<form id="form-delete-collection" action="{% url 'delete_collection' %}" method="POST">{% csrf_token %}</form>
+<div class="row">
+    <div class="col-offset-1 col-10 col-offset-1 col-md-offset-1 col-md-10 col-md-offset-1 col-sm-offset-1 col-sm-10 col-sm-offset-1 col-lg-offset-1 col-lg-10 col-lg-offset-1 col-xl-offset-1 col-xl-10 col-xl-offset-1">
+        <h2 class="text-center">
+            Collections
+        </h2>
+        <table class="table table-collections">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Alias</th>
+                    <th scope="col">Can Read</th>
+                    <th scope="col">Can Write</th>
+                    <th scope="col">Modify</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for collection in collections %}
+                <tr class="tr-collection">
+                    <td scope="col" class="th-collection-id">{{ collection.col_id }}</td>
+                    <td scope="col" class="th-collection-title">{{ collection.title }}</td>
+                    <td scope="col" class="th-collection-description">{{ collection.description }}</td>
+                    <td scope="col" class="th-collection-alias">{{ collection.alias }}</td>
+                    <td scope="col">
+                        <input type="checkbox" class="form-check-input check-collection-can-read" disabled {%if collection.can_read %}checked{% endif %}/>
+                    </td>
+                    <td scope="col">
+                        <input type="checkbox" class="form-check-input check-collection-can-write" disabled {%if collection.can_write %}checked{% endif %}/>
+                    </td>
+                    <td scope="col">
+                        <button type="button" class="btn btn-warning btn-sm btn-modify-collection">Modify</button>
+                    </td>
+                    <td scope="col">
+                        <button type="button" class="btn btn-danger btn-sm btn-delete-collection">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+        <button type="button" class="btn btn-info" id="btn-create-collection">Create Collection</button>
+        <br/>
+        <br/>
+    </div>
+
+    <div id="modal-collection-modify" class="modal" tabindex="-1" role="dialog">
+        <div  class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title text-center">Create/Modify Collection Settings</h2>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-collection">
+                        <tbody>
+                            <tr>
+                                <td>ID</td>
+                                <td>
+                                    <input type="text" class="form-control" id="modify-collection-id" disabled/>
+                                    <div id="div-modify-collection-gen-uuid">
+                                        <br/>
+                                        <button type="button" class="btn btn-info btn-sm btn-modify-collection-gen-uuid">Generate UUID</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Title</td>
+                                <td><input type="text" class="form-control" id="modify-collection-title"/></td>
+                            </tr>
+                            <tr>
+                                <td>Description</td>
+                                <td><input type="text" class="form-control" id="modify-collection-description"/></td>
+                            </tr>
+                            <tr>
+                                <td>Alias</td>
+                                <td><input type="text" class="form-control" id="modify-collection-alias"/></td>
+                            </tr>
+                            <tr>
+                                <td>Can Read</td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input" id="modify-collection-can-read"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Choose community (Can Read)</td>
+                                <td>
+                                    {%for community in communities %}
+                                    <input type="checkbox" class="form-check-input check-can-read-community" id="check-can-read-{{community.name}}" data-community-name="{{community.name}}"/>
+                                    <label class="form-check-label" for="check-can-read-{{community.name}}">{{ community.name }}</label>
+                                    <br/>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Can Write</td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input" id="modify-collection-can-write"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Choose community (Can write)</td>
+                                <td>
+                                    {%for community in communities %}
+                                    <input type="radio" class="form-radio-input radio-can-write-community" id="radio-can-write" name="can_write_community" value="{{community.name}}"/>
+                                    <label class="form-radio-label" for="radio-can-write-{{community.name}}">{{ community.name }}</label>
+                                    <br/>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" class="form-control" id="modify-collection-action"/>
+                    <button type="button" class="btn btn-primary" id="btn-create-modify-changes">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}

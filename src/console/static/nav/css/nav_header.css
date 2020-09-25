@@ -1,0 +1,19 @@
+.navbar{
+    margin-bottom: 0px;
+}
+
+.nav li a.active    {
+    color:#fff;
+    background:#67B5AC;
+}
+
+h1, h2{
+    font-family: 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+td{
+   font-size: 14px;
+   font-family: 'Roboto', sans-serif;
+   font-weight: bold;
+}
