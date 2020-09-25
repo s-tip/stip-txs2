@@ -17,11 +17,11 @@ If you have any questions, please send e-mail to s-tip@googlegroups.com.
 ### Contributing
 
 Fork, then clone the repo:
-git clone https://github.com/s-tip/stip-txs.git
+git clone https://github.com/s-tip/stip-txs2.git
 
 Setup your environment and do your work.
 
-Push to your fork and [submit a pull request](https://github.com/s-tip/stip-txs/compare/)
+Push to your fork and [submit a pull request](https://github.com/s-tip/stip-txs2/compare/)
 
 ### Supported Languages
 * English 
