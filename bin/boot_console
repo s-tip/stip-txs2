@@ -1,4 +1,4 @@
 #!/bin/sh
-export PYTHONPATH=/opt/s-tip/common/src:/opt/s-tip/rs/src:/opt/s-tip/txs21/src
+export PYTHONPATH=/opt/s-tip/common/src:/opt/s-tip/rs/src:/opt/s-tip/txs2/src
 python3 manage_console.py runserver 0.0.0.0:8444
 
