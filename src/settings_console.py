@@ -54,6 +54,10 @@ try:
     TIME_ZONE = config('TIME_ZONE')
 except UndefinedValueError:
     TIME_ZONE = 'UTC'
+try:
+    cookie_domain_name = config('COOKIE_DOMAIN_NAME')
+except UndefinedValueError:
+    cookie_domain_name = None
 
 # Application definition
 INSTALLED_APPS = [
@@ -153,6 +157,7 @@ STATICFILES_DIRS = [
 STATIC_URL = '/static/'
 
 SESSION_COOKIE_NAME = 'stip'
+SESSION_COOKIE_DOMAIN = cookie_domain_name
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 APPEND_SLASH = False
