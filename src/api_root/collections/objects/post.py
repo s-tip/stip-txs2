@@ -28,6 +28,10 @@ def async_post(envelop, collection, taxii2_status, stip_user, community):
             pass
         bundle_objects.append(object_)
         pendings.append((object_id, modified))
+
+    if len(bundle_objects) == 0:
+        return
+
     bundle = Bundle(bundle_objects, allow_custom=True)
 
     try:
