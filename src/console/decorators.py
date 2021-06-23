@@ -5,7 +5,7 @@ from django.shortcuts import render
 def admin_required(f):
     def wrap(request, *args, **kwargs):
         stip_user = request.user
-        if not stip_user.is_authenticated():
+        if not stip_user.is_authenticated:
             return render(request, 'cover.html')
         if not stip_user.is_admin:
             django.contrib.auth.logout(request)
