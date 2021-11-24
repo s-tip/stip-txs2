@@ -127,5 +127,7 @@ USE_TZ = True
 SESSION_COOKIE_NAME = 'stip'
 SESSION_COOKIE_DOMAIN = cookie_domain_name
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 APPEND_SLASH = False
