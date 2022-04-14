@@ -35,7 +35,7 @@ def get_response_header(objects):
 
 def ok(payload=None, response_header=None):
     content = None
-    if payload:
+    if payload is not None:
         if isinstance(payload, dict):
             content = json.dumps(payload)
     resp = django_resp.HttpResponse(

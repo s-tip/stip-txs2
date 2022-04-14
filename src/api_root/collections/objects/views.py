@@ -174,6 +174,8 @@ def _objects_get(api_root_name, collection, query):
                     envelop['next'] = str(next_ + limit)
                 break
         response_header = taxii_resp.get_response_header(objects)
+        if len(envelop['objects']) == 0:
+            envelop = {}
         return taxii_resp.ok(envelop, response_header=response_header)
     except Exception as e:
         return taxii_resp.server_error(e)
