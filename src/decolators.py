@@ -4,10 +4,11 @@ from auth.basic_auth import get_basic_auth
 from core.request_header import get_version_from_accept
 
 
-def get_post_required(f):
+def get_post_delete_required(f):
     def wrap(request, *args, **kwargs):
-        if request.method != 'GET' and request.method != 'POST':
-            return taxii_resp.not_allowed(['GET', 'POST'])
+        ALLOWED_METHODS = ['GET', 'POST', 'DELETE']
+        if request.method not in ALLOWED_METHODS:
+            return taxii_resp.not_allowed(ALLOWED_METHODS)
         if not _accept_check(request):
             return taxii_resp.invalid_accept()
         return f(request, *args, **kwargs)
@@ -19,8 +20,9 @@ def get_post_required(f):
 
 def get_delete_required(f):
     def wrap(request, *args, **kwargs):
-        if request.method != 'GET' and request.method != 'DELETE':
-            return taxii_resp.not_allowed(['GET', 'DELETE'])
+        ALLOWED_METHODS = ['GET', 'DELETE']
+        if request.method not in ALLOWED_METHODS:
+            return taxii_resp.not_allowed(ALLOWED_METHODS)
         if not _accept_check(request):
             return taxii_resp.invalid_accept()
         return f(request, *args, **kwargs)

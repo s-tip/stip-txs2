@@ -11,12 +11,11 @@ from api_root.status.models import Status
 from .filter import apply_filter
 from .post import async_post
 from ctirs.core.mongo.documents_taxii21_objects import StixManifest, StixObject
-from ctirs.core.mongo.documents import Communities
-from decolators import get_required, get_post_required, get_delete_required
+from decolators import get_required, get_delete_required, get_post_delete_required
 
 
 @csrf_exempt
-@get_post_required
+@get_post_delete_required
 def objects(request, api_root_name, collection_id):
     try:
         if not ApiRoot.auth_check(request, api_root_name):
@@ -24,17 +23,28 @@ def objects(request, api_root_name, collection_id):
         collection = ApiRoot.get_collection(api_root_name, collection_id)
         if not collection:
             return taxii_resp.not_found()
-        query = parse_query(request)
+        try:
+            query = parse_query(request)
+        except Exception as e:
+            return taxii_resp.bad_request(str(e))
         if request.method == 'GET':
             if collection['can_read']:
-                return _objects_get(api_root_name, collection, query)
+                return _objects_get(collection, query)
             else:
                 return taxii_resp.forbidden()
-        else:
+        elif request.method == 'POST':
             if collection['can_write']:
                 return _objects_post(request, api_root_name, collection)
             else:
                 return taxii_resp.forbidden()
+        else:
+            if not collection['can_read'] and not collection['can_write']:
+                return taxii_resp.not_found()
+            if collection['can_read'] and not collection['can_write']:
+                return taxii_resp.forbidden()
+            if not collection['can_read'] and collection['can_write']:
+                return taxii_resp.forbidden()
+            return _object_delete(collection, query, None)
     except ApiRoot.DoesNotExist:
         return taxii_resp.not_found()
     except Exception as e:
@@ -50,10 +60,13 @@ def object_(request, api_root_name, collection_id, object_id):
         collection = ApiRoot.get_collection(api_root_name, collection_id)
         if not collection:
             return taxii_resp.not_found()
-        query = parse_query(request)
+        try:
+            query = parse_query(request)
+        except Exception as e:
+            return taxii_resp.bad_request(str(e))
         if request.method == 'GET':
             if collection['can_read']:
-                return _object_get(api_root_name, collection, object_id, query)
+                return _object_get(collection, object_id, query)
             else:
                 return taxii_resp.forbidden()
         elif request.method == 'DELETE':
@@ -63,7 +76,7 @@ def object_(request, api_root_name, collection_id, object_id):
                 return taxii_resp.forbidden()
             if not collection['can_read'] and collection['can_write']:
                 return taxii_resp.forbidden()
-            return _object_delete(api_root_name, collection, object_id, query)
+            return _object_delete(collection, query, object_id)
     except ApiRoot.DoesNotExist:
         return taxii_resp.not_found()
     except Exception as e:
@@ -79,9 +92,12 @@ def manifest(request, api_root_name, collection_id):
         collection = ApiRoot.get_collection(api_root_name, collection_id)
         if not collection:
             return taxii_resp.not_found()
-        query = parse_query(request)
+        try:
+            query = parse_query(request)
+        except Exception as e:
+            return taxii_resp.bad_request(str(e))
         if collection['can_read']:
-            return _manifest_get(api_root_name, collection, query)
+            return _manifest_get(collection, query)
         else:
             return taxii_resp.forbidden()
     except ApiRoot.DoesNotExist:
@@ -107,7 +123,10 @@ def versions(request, api_root_name, collection_id, object_id):
             return taxii_resp.not_found()
 
         more = False
-        query = parse_query(request)
+        try:
+            query = parse_query(request)
+        except Exception as e:
+            return taxii_resp.bad_request(str(e))
         objects = []
         versions_list = []
 
@@ -149,7 +168,7 @@ def _pagination_info(query):
     return limit, next_
 
 
-def _objects_get(api_root_name, collection, query):
+def _objects_get(collection, query):
     try:
         envelop = {}
         envelop['more'] = False
@@ -220,7 +239,7 @@ def _get_manifest_record(stix_object, media_type):
     return manifest_record
 
 
-def _manifest_get(api_root_name, collection, query):
+def _manifest_get(collection, query):
     try:
         manifest_records = []
         objects = []
@@ -272,7 +291,7 @@ def _get_can_write_communities(collection):
         return None
 
 
-def _object_get(api_root_name, collection, object_id, query):
+def _object_get(collection, object_id, query):
     try:
         envelop = {}
         envelop['more'] = False
@@ -305,9 +324,11 @@ def _object_get(api_root_name, collection, object_id, query):
         return taxii_resp.server_error(e)
 
 
-def _object_delete(api_root_name, collection, object_id, query):
+def _object_delete(collection, query, object_id):
     try:
-        query = _set_object_id_in_query(query, object_id)
+        print(object_id)
+        if object_id is not None:
+            query = _set_object_id_in_query(query, object_id)
         _, cursor = apply_filter(
             query,
             _get_can_write_communities(collection))

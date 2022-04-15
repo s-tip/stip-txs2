@@ -111,6 +111,16 @@ def forbidden():
         content_type=const.HTTP_RESPONSE_CONTENT_TYPE)
 
 
+def bad_request(reason='Bad Request'):
+    payload = _get_error_payload(
+        'Bad Request',
+        reason,
+        '400')
+    return django_resp.HttpResponseBadRequest(
+        content=json.dumps(payload),
+        content_type=const.HTTP_RESPONSE_CONTENT_TYPE)
+
+
 def payload_too_large():
     HTTP_RESPONSE_PAYLOAD_TOO_LARGE = 413
     payload = _get_error_payload(
