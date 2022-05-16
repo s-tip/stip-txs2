@@ -119,7 +119,7 @@ def versions(request, api_root_name, collection_id, object_id):
             return taxii_resp.forbidden()
 
         can_read_communities = _get_can_read_communities(collection)
-        if StixObject.objects.filter(object_id=object_id, community__in=can_read_communities).count() == 0:
+        if StixObject.objects.filter(object_id=object_id, community__in=can_read_communities, deleted=False).count() == 0:
             return taxii_resp.not_found()
 
         more = False
@@ -299,7 +299,7 @@ def _object_get(collection, object_id, query):
         objects = []
 
         can_read_communities = _get_can_read_communities(collection)
-        if StixObject.objects.filter(object_id=object_id, community__in=can_read_communities).count() == 0:
+        if StixObject.objects.filter(object_id=object_id, community__in=can_read_communities, deleted=False).count() == 0:
             return taxii_resp.not_found()
 
         query = _set_object_id_in_query(query, object_id)
@@ -326,7 +326,6 @@ def _object_get(collection, object_id, query):
 
 def _object_delete(collection, query, object_id):
     try:
-        print(object_id)
         if object_id is not None:
             query = _set_object_id_in_query(query, object_id)
         _, cursor = apply_filter(
