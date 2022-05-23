@@ -3,6 +3,7 @@ import threading
 import core.response as taxii_resp
 import core.request_header as rh
 import core.const as const
+from core.logger import debug_request, get_logger
 from django.views.decorators.csrf import csrf_exempt
 from auth.basic_auth import get_basic_auth
 from core.request_query import parse_query
@@ -13,12 +14,19 @@ from .post import async_post
 from ctirs.core.mongo.documents_taxii21_objects import StixManifest, StixObject
 from decolators import get_required, get_delete_required, get_post_delete_required
 
+logger = get_logger()
+
 
 @csrf_exempt
 @get_post_delete_required
 def objects(request, api_root_name, collection_id):
     try:
-        if not ApiRoot.auth_check(request, api_root_name):
+        debug_request(request)
+        logger.info('request:api_root_name: %s' % (api_root_name))
+        logger.info('request:collection_id: %s' % (collection_id))
+        user = ApiRoot.auth_check(request, api_root_name)
+        logger.info('request:user: %s' % (user))
+        if not user:
             return taxii_resp.unauhorized()
         collection = ApiRoot.get_collection(api_root_name, collection_id)
         if not collection:
@@ -55,7 +63,13 @@ def objects(request, api_root_name, collection_id):
 @get_delete_required
 def object_(request, api_root_name, collection_id, object_id):
     try:
-        if not ApiRoot.auth_check(request, api_root_name):
+        debug_request(request)
+        logger.info('request:api_root_name: %s' % (api_root_name))
+        logger.info('request:collection_id: %s' % (collection_id))
+        logger.info('request:object_id: %s' % (object_id))
+        user = ApiRoot.auth_check(request, api_root_name)
+        logger.info('request:user: %s' % (user))
+        if not user:
             return taxii_resp.unauhorized()
         collection = ApiRoot.get_collection(api_root_name, collection_id)
         if not collection:
@@ -87,7 +101,12 @@ def object_(request, api_root_name, collection_id, object_id):
 @get_required
 def manifest(request, api_root_name, collection_id):
     try:
-        if not ApiRoot.auth_check(request, api_root_name):
+        debug_request(request)
+        logger.info('request:api_root_name: %s' % (api_root_name))
+        logger.info('request:collection_id: %s' % (collection_id))
+        user = ApiRoot.auth_check(request, api_root_name)
+        logger.info('request:user: %s' % (user))
+        if not user:
             return taxii_resp.unauhorized()
         collection = ApiRoot.get_collection(api_root_name, collection_id)
         if not collection:
@@ -110,7 +129,13 @@ def manifest(request, api_root_name, collection_id):
 @get_required
 def versions(request, api_root_name, collection_id, object_id):
     try:
-        if not ApiRoot.auth_check(request, api_root_name):
+        debug_request(request)
+        logger.info('request:api_root_name: %s' % (api_root_name))
+        logger.info('request:collection_id: %s' % (collection_id))
+        logger.info('request:object_id: %s' % (object_id))
+        user = ApiRoot.auth_check(request, api_root_name)
+        logger.info('request:user: %s' % (user))
+        if not user:
             return taxii_resp.unauhorized()
         collection = ApiRoot.get_collection(api_root_name, collection_id)
         if not collection:
@@ -217,6 +242,7 @@ def _objects_post(request, api_root_name, collection):
             return taxii_resp.server_error(Exception('No community for publish'))
 
         envelop = json.loads(request.body)
+        logger.info('request:envelop: %s' % (json.dumps(envelop, indent=4)))
         taxii2_status = Status.create(envelop['objects'])
 
         args = [envelop, collection, taxii2_status, stip_user, community]
