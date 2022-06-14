@@ -11,11 +11,9 @@ def async_post(envelop, collection, taxii2_status, stip_user, community):
     for object_ in envelop['objects']:
         try:
             object_id = object_['id']
-            if 'modified' not in object_:
-                msg = 'No modified(id: %s)' % (object_id)
-                taxii2_status.failure(object_id, object_['created'], msg)
-                continue
-            modified = get_modified_from_object(object_)
+            modified = None
+            if 'modified' in object_:
+                modified = get_modified_from_object(object_)
             objects = StixObject.objects.filter(
                 object_id=object_id,
                 modified=modified)
