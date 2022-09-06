@@ -4,6 +4,7 @@ import core.const as const
 
 
 def parse_query(request):
+    _check_duplicate_params(request)
     queries = {}
     # added_after
     if request.GET.get('added_after'):
@@ -36,6 +37,18 @@ def str2datetime(s):
         return None
 
 
+def _check_duplicate_params(request):
+    query_params = {}
+    for param in request.META["QUERY_STRING"].split('&'):
+        kv = param.split('=')
+        if len(kv) < 2:
+            continue
+        if kv[0] in query_params:
+            raise Exception('Duplicate parameter (%s)' % (kv[0]))
+        query_params[kv[0]] = kv[1]
+    return query_params
+
+
 def _parse_query_value_list(s):
     rtn = []
     for item in s.split(','):
@@ -48,10 +61,10 @@ def _parse_query_match(request):
     keys = [
         'id', 'spec_version', 'type', 'version',
         # -----
-        'source_ref', 'target_ref', 'relationship_type',
-        'sighting_of_ref', 'object_marking_refs',
-        'tlp', 'external_id', 'source_name', 'created_by_ref',
-        'confidence', 'sectors', 'labels', 'object_refs', 'value',
+        #'source_ref', 'target_ref', 'relationship_type',
+        #'sighting_of_ref', 'object_marking_refs',
+        #'tlp', 'external_id', 'source_name', 'created_by_ref',
+        #'confidence', 'sectors', 'labels', 'object_refs', 'value',
     ]
 
     for key in keys:

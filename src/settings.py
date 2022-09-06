@@ -11,10 +11,18 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-import logging
+import json
+from logging import config as logging_config
+from logging import disable, WARNING
 from decouple import Csv, config, UndefinedValueError
 
-logging.disable(logging.WARNING)
+try:
+    txs2_audit_long_conf_path = config('TXS2_AUDIT_LOG_CONF')
+    with open(txs2_audit_long_conf_path) as fp:
+        log_conf = json.load(fp)
+        logging_config.dictConfig(log_conf)
+except (FileNotFoundError, UndefinedValueError):
+    disable(WARNING)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,18 +69,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'core.boot.TXS21Boot',
     'ctirs',
+    'corsheaders'
 ]
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = [
+]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 ROOT_URLCONF = 'urls_txs21'

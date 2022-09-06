@@ -7,11 +7,11 @@ REDIRECT_TO = 'discovery'
 
 
 def login(request):
-    return login_views.login(request, REDIRECT_TO)
+    return login_views.login(request, REDIRECT_TO, password_modified_to=REDIRECT_TO)
 
 
 def login_totp(request):
-    return login_views.login_totp(request, REDIRECT_TO)
+    return login_views.login_totp(request, REDIRECT_TO, password_modified_to=REDIRECT_TO)
 
 
 @admin_required

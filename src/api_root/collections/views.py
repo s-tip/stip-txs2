@@ -1,14 +1,21 @@
 import core.response as taxii_resp
+from core.logger import debug_request, get_logger
 from django.views.decorators.csrf import csrf_exempt
 from api_root.models import ApiRoot
 from decolators import get_required
+
+logger = get_logger()
 
 
 @csrf_exempt
 @get_required
 def collections(request, api_root_name):
     try:
-        if not ApiRoot.auth_check(request, api_root_name):
+        debug_request(request)
+        logger.info('request:api_root_name: %s' % (api_root_name))
+        user = ApiRoot.auth_check(request, api_root_name)
+        logger.info('request:user: %s' % (user))
+        if not user:
             return taxii_resp.unauhorized()
         collections = ApiRoot.get_collections(api_root_name)
         if not collections:
@@ -25,7 +32,12 @@ def collections(request, api_root_name):
 @get_required
 def collection(request, api_root_name, collection_id):
     try:
-        if not ApiRoot.auth_check(request, api_root_name):
+        debug_request(request)
+        logger.info('request:api_root_name: %s' % (api_root_name))
+        logger.info('request:collection_id: %s' % (collection_id))
+        user = ApiRoot.auth_check(request, api_root_name)
+        logger.info('request:user: %s' % (user))
+        if not user:
             return taxii_resp.unauhorized()
         collection = ApiRoot.get_collection(api_root_name, collection_id)
         if collection:

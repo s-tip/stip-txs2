@@ -9,15 +9,17 @@ def async_post(envelop, collection, taxii2_status, stip_user, community):
     pendings = []
     bundle_objects = []
     for object_ in envelop['objects']:
-        object_id = object_['id']
-        modified = get_modified_from_object(object_)
         try:
+            object_id = object_['id']
+            modified = None
+            if 'modified' in object_:
+                modified = get_modified_from_object(object_)
             objects = StixObject.objects.filter(
                 object_id=object_id,
                 modified=modified)
             is_exist = False
-            for object_ in objects:
-                if not object_.deleted:
+            for object__ in objects:
+                if not object__.deleted:
                     is_exist = True
                     break
             if is_exist:

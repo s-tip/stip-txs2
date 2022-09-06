@@ -26,10 +26,15 @@ class Status(me.Document):
         return status
 
     def modify_detail_status(self, object_id, version, status, message=None):
-        status_detail = StatusDetail.objects.get(
-            taxii_status=self,
-            object_id=object_id,
-            version=version)
+        if version:
+            status_detail = StatusDetail.objects.get(
+                taxii_status=self,
+                object_id=object_id,
+                version=version)
+        else:
+            status_detail = StatusDetail.objects.get(
+                taxii_status=self,
+                object_id=object_id)
         status_detail.status = status
         if message:
             status_detail.message = message
