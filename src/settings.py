@@ -60,6 +60,11 @@ try:
 except UndefinedValueError:
     cookie_domain_name = None
 
+try:
+    CSRF_TRUSTED_ORIGINS = json.loads(config('CSRF_TRUSTED_ORIGINS_TXS2'))
+except Exception:
+    CSRF_TRUSTED_ORIGINS = []
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
