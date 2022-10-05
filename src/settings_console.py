@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import json
 import logging
 from decouple import Csv, config, UndefinedValueError
 from unipath import Path
@@ -58,6 +59,11 @@ try:
     cookie_domain_name = config('COOKIE_DOMAIN_NAME')
 except UndefinedValueError:
     cookie_domain_name = None
+
+try:
+    CSRF_TRUSTED_ORIGINS = json.loads(config('CSRF_TRUSTED_ORIGINS_TXS2_CONSOLE'))
+except Exception:
+    CSRF_TRUSTED_ORIGINS = []
 
 # Application definition
 INSTALLED_APPS = [
