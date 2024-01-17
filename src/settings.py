@@ -148,5 +148,6 @@ SESSION_COOKIE_DOMAIN = cookie_domain_name
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
 
 APPEND_SLASH = False
