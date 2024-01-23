@@ -15,6 +15,7 @@ import json
 import logging
 from decouple import Csv, config, UndefinedValueError
 from unipath import Path
+from stip.common.session_config import SessionConfig
 
 logging.disable(logging.WARNING)
 
@@ -166,6 +167,8 @@ SESSION_COOKIE_NAME = 'stip'
 SESSION_COOKIE_DOMAIN = cookie_domain_name
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_AGE = SessionConfig.get_session_cokkie_age()
+
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 
